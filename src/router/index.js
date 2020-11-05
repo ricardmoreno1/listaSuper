@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/Home/Index.vue'
+import Error404 from '../views/Error/404.vue'
 
 Vue.use(VueRouter)
 
@@ -16,8 +17,13 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/About/About.vue')
+  },
+  {
+    path: '*',
+    component: Error404
   }
+
 ]
 
 const router = new VueRouter({

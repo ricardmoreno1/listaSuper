@@ -9,7 +9,6 @@
 <script>
 
 import { mapState } from 'vuex'
-
 import LoadLayout from './layouts/LoadLayout'
 import MainLayout from './layouts/MainLayout'
 import BaseLoading from '@/components/BaseLoading.vue'
@@ -31,6 +30,7 @@ export default {
 </script>
 <style>
 #app {
+  padding: 5px;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,6 +39,6 @@ export default {
 }
 
 #nav {
-  padding:30px;
+  padding:1px;
 }
 </style>

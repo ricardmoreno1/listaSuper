@@ -20,7 +20,7 @@ export default {
 
 <style>
 #app {
-    padding: 60px 0;
+    padding: 5px 0;
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

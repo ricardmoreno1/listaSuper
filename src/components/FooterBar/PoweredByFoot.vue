@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Powered by</p>
+    <p>Creada por</p>
   </div>
 </template>
 

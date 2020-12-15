@@ -1,4 +1,4 @@
-# admin_precios_productos
+# Lista Precios
 
 ## Project setup
 ```

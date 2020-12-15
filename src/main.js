@@ -52,11 +52,22 @@ var firebaseConfig = {
 }
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
-firebase.analytics()
+// fcuando cambia el usuario, cambia las configuracion
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    store.dispatch('FETCH_AUTH_USER')
+  }
+})
+// firebase.analytics()
 
 // Instancia principal de Vue
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  beforeCreate () { // antes de iniciar, revisa que hay un usuario logeado
+    if (store.state.authId) {
+      this.$store.dispatch('FETCH_USER', { id: store.state.authId })
+    }
+  }
 }).$mount('#app')

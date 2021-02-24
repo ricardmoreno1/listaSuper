@@ -1,6 +1,8 @@
 <template>
-  <div >
-      <p> 404 Error</p>
+  <div>
+    <p> Pagina no disponible en este momento</p>
+    <p> Favor de volver a intentar en unos dias </p>
+    <p> 404 Error</p>
   </div>
 </template>
 

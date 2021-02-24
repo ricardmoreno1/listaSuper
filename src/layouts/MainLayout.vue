@@ -1,13 +1,11 @@
 <template>
   <div class="container">
+    <notifications group="foo" />
     <HeaderBar/>
     <!-- Modals -->
-
     <router-view/>
-
     <FooterBar/>
     <!-- Modals -->
-
     <modal :show="modals.login" @close-modal="closeModal">
       <h1> Bienvenido </h1>
       <form @submit.prevent="loginHandlerSubmit">
@@ -25,7 +23,7 @@
         </div>
         <div class="mb-4">
           <toggle-input v-model="formLogin.rememberMe"></toggle-input>
-          Remember Me
+          Recuerdame
         </div>
         <div class="mb-4">
           <button class="btn btn-primary mr-3 w-full">Login</button>
@@ -69,6 +67,7 @@ import HeaderBar from '@/components/HeaderBar/Index'
 import FooterBar from '@/components/FooterBar/Index'
 import Modal from '@/components/Modal.vue'
 import ToggleInput from '@/components/ToggleInput.vue'
+
 export default {
   name: 'MainLayout',
   data () {
@@ -121,8 +120,9 @@ export default {
         email: this.formLogin.email,
         password: this.formLogin.password
       }).then(() => {
-        console.log('ya entro')
+        console.log('Logeando: Ya entro')
         this.closeModal()
+        //  this.$router.go(0) // ayuda a recargar despues de logearse
       })
     }
   }

@@ -7,8 +7,9 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 // import { faVuejs, faBootstrap, faFontAwesome, faGithub, faBattleNet } from '@fortawesome/free-brands-svg-icons'
 // El componente que vamos a utilizar
 // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import App from './App.vue'
+
 import firebase from 'firebase'
+import App from './App.vue'
 import Notifications from 'vue-notification'
 import router from './router'
 import store from './store'
@@ -54,6 +55,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 // fcuando cambia el usuario, cambia las configuracion
 firebase.auth().onAuthStateChanged((user) => {
+  console.log('onAuthStateChanged')
   if (user) {
     store.dispatch('FETCH_AUTH_USER')
   }
@@ -66,6 +68,7 @@ new Vue({
   store,
   render: h => h(App),
   beforeCreate () { // antes de iniciar, revisa que hay un usuario logeado
+    console.log('beforeCreate VUE Instancia auth[' + store.state.authId + ']')
     if (store.state.authId) {
       this.$store.dispatch('FETCH_USER', { id: store.state.authId })
     }

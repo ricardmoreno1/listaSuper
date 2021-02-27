@@ -2,7 +2,8 @@
     <div class="container">
         <div class="titulo_lista">
             <p style="color:white ; font-size:18px;"> Lista Supermercado </p>
-            <b-form-select v-model="selected" :options="options"></b-form-select>
+            <b-form-select name="prioridades" v-model="selected" :options="options" @input="searchSubGroup('props')"></b-form-select>
+            <b-form-select name="caracteristicas" v-model="selectedTienda" :options="optionsTiendas" @change="searchSubGroup('car')"></b-form-select>
 
         </div>
          <div class="productos">
@@ -14,7 +15,7 @@
                         <b-button-group class="mr-1">
                           <!-- div   class="d-flex justify-content-between"   producto['.key'] -->
                           <b-button block v-b-toggle ="'collapse-'+ idx" >
-                              {{ idx }}-{{ producto.name}} - ${{producto.precios.last}} [{{producto.presentacion}}][T:{{producto.tiendas.last}}][{{ producto.deseado}}]
+                            {{ producto.name}} - ${{producto.precios.last}} [{{producto.presentacion}}][T:{{producto.tiendas.last}}]
                           </b-button>
                           <b-button  @click="addDeseo(idx, $event)" size="sm"
                                     class="flex-item"
@@ -91,15 +92,65 @@ export default {
       return data
     } */
     productFiltrado () {
-      console.log(this.selected)
-      if (this.selected === 'a') {
-        return Object.values(this.productos).filter((a) => a.deseado)
-        // return this.products.filter(product=>product.name.toUpperCase().includes(this.search.toUpperCase()))
+      // console.log(this.selected)
+      if (this.lastselect === 'props') {
+        if (this.selected === 'a') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.deseado === true))
+          console.log(productitos)
+          // this.limpiarFiltro(2)
+          return productitos
+        } else if (this.selected === 'b') {
+          // this.limpiarFiltro(2)
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.seleccionado === true))
+          return productitos
+        } else {
+          return this.productos
+        }
+      } else if (this.lastselect === 'car') {
+        if (this.selectedTienda === 'a') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Aurrera'))
+          console.log(productitos)
+          // this.limpiarFiltro(1)
+          return productitos
+        } else if (this.selectedTienda === 'b') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Puesto'))
+          // this.limpiarFiltro(1)
+          return productitos
+        } else if (this.selectedTienda === 'c') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Soriana'))
+          // this.limpiarFiltro(1)
+          return productitos
+        } else if (this.selectedTienda === 'd') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'oxxo'))
+          // this.limpiarFiltro(1)
+          return productitos
+        } else if (this.selectedTienda === 'e') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'SuperNaturista'))
+          return productitos
+        } else {
+          return this.productos
+        }
+      } else {
+        return this.productos
       }
-      if (this.selected === 'b') {
-        return Object.values(this.productos).filter((a) => a.seleccionado)
+    },
+    productFiltradoByTienda () {
+      if (this.selectedTienda === 'a') {
+        const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Aurrera'))
+        console.log(productitos)
+        return productitos
+      } else if (this.selectedTienda === 'b') {
+        const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Mercado'))
+        return productitos
+      } else if (this.selectedTienda === 'c') {
+        const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Soriana'))
+        return productitos
+      } else if (this.selected === 'd') {
+        const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'oxxo'))
+        return productitos
+      } else {
+        return this.productos
       }
-      return this.productos
     }
 
   },
@@ -124,7 +175,17 @@ export default {
         { value: null, text: 'Escoje para filtrar productos' },
         { value: 'a', text: 'Deseos' },
         { value: 'b', text: 'Seleccionados' }
-      ]
+      ],
+      selectedTienda: null,
+      optionsTiendas: [
+        { value: null, text: 'Escoje para filtrar por Tienda' },
+        { value: 'a', text: 'Aurrera' },
+        { value: 'b', text: 'Mercado' },
+        { value: 'c', text: 'Soriana' },
+        { value: 'd', text: 'oxxo' },
+        { value: 'e', text: 'SuperNaturista' }
+      ],
+      lastselect: ''
     }
   },
   mounted () {
@@ -430,6 +491,25 @@ export default {
       })
       this.contador = 0
       this.contadorDeseados = 0
+    },
+    limpiarFiltro: function (tipo) {
+      // if (tipo === 1) this.selected = null
+      // if (tipo === 2) this.selectedTienda = null
+      // console.log('DESEO')
+    },
+    searchSubGroup: function (event) {
+      // console.log('DESEO id[' + id + '] even.id[' + event.target.id + ']')
+      // console.log(this.selected)
+      console.log(event)
+      // console.log('even.id[' + event.target.name + ']')
+      // console.log('] even.id[' + this.name + ']')
+      // console.log(this)
+      this.lastselect = event
+      /* if (event === 'props') {
+        this.selectedTienda = null
+      } else if (event === 'car') {
+        this.selected = null
+      } */
     }
   },
   watch: {

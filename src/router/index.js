@@ -23,6 +23,14 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/addProduct',
+    name: 'crearProducto',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Product/CreateProduct.vue'),
+    meta: {
+      requiresAuth: true
+    }
+  },
   /* {
     path: '/user',
     redirect: { name: 'ProfilePage' }

@@ -5,6 +5,7 @@
     <!--nav class="navbar navbar-expand-sm navbar-light" -->
       <!--a class="navbar-brand" href="#">Mi super</a-->
       <b-navbar-brand href="#">Mi super</b-navbar-brand>
+      <b-nav-item :to="{name: 'Home'}">Home</b-nav-item>
       <b-navbar-toggle target="navbarNav-opt"></b-navbar-toggle>
       <!--button-- class="navbar-toggler" type="button" data-toggle="collapse"
         data-target="#navbarNav-opt" aria-controls="navbarNav-opt"
@@ -14,7 +15,7 @@
       <b-collapse id="navbarNav-opt" is-nav>
         <b-navbar-nav>
           <b-nav-item href="#">Inicio</b-nav-item>
-          <b-nav-item href="#">Agrega Producto</b-nav-item>
+          <b-nav-item :to="{name: 'crearProducto'}">Agrega Producto</b-nav-item>
           <b-nav-item href="#">Agrega TiendA</b-nav-item>
           <div class="flex" v-if="user">
             <b-navbar-brand href="#">{{user.name}}</b-navbar-brand>

@@ -1,18 +1,18 @@
 <template>
   <div class="home">
-    <HomeTitle/>
+    <!--HomeTitle/-->
     <Producto/>
   </div>
 </template>
 
 <script>
-import HomeTitle from './HomeTitle'
+// import HomeTitle from './HomeTitle'
 import Producto from '../../views/Product/Product'
 
 export default {
   name: 'Home',
   components: {
-    HomeTitle,
+    // HomeTitle,
     Producto
   }
 }

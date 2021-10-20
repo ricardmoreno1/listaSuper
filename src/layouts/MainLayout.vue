@@ -129,5 +129,12 @@ export default {
 }
 </script>
 <style>
-
+.container {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+  @media only screen and (min-width: 790px) {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}
 </style>

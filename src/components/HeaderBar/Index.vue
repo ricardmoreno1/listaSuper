@@ -1,11 +1,12 @@
 <template>
   <div >
     <!--div class="navigation-bar"-->
-    <b-navbar toggleable="lg" type="dark" id="default-navbar">
+    <b-navbar toggleable="lg" type="dark" id="default-navbar" >
     <!--nav class="navbar navbar-expand-sm navbar-light" -->
       <!--a class="navbar-brand" href="#">Mi super</a-->
-      <b-navbar-brand href="#">Mi super</b-navbar-brand>
-      <b-nav-item :to="{name: 'Home'}">Home</b-nav-item>
+      <b-navbar-brand :to="{name: 'Home'}"> Mi super </b-navbar-brand>
+      <!-- <b-nav-item :to="{name: 'Home'}">Home</b-nav-item> -->
+
       <b-navbar-toggle target="navbarNav-opt"></b-navbar-toggle>
       <!--button-- class="navbar-toggler" type="button" data-toggle="collapse"
         data-target="#navbarNav-opt" aria-controls="navbarNav-opt"
@@ -13,18 +14,22 @@
         <span class="navbar-toggler-icon"></span>
       </-button-->
       <b-collapse id="navbarNav-opt" is-nav>
-        <b-navbar-nav>
-          <b-nav-item href="#">Inicio</b-nav-item>
-          <b-nav-item :to="{name: 'crearProducto'}">Agrega Producto</b-nav-item>
-          <b-nav-item href="#">Agrega TiendA</b-nav-item>
-          <div class="flex" v-if="user">
+        <b-navbar-nav >
+          <!-- <b-nav-item href="#">Inicio</b-nav-item> -->
+          <b-nav-item :to="{name: 'crearProducto'}">Agrega producto</b-nav-item>
+          <b-nav-item href="#">Agrega tienda</b-nav-item>
+          <b-navbar-brand v-if="user" href="#">{{user.name}}</b-navbar-brand>
+          <b-nav-item v-if="user"  @click.prevent="logOut" class="cerrarSesion">Salir</b-nav-item>
+          <b-nav-item v-if="!user" @click.prevent="getLogin">Login</b-nav-item>
+          <b-nav-item v-if="!user" @click.prevent="signUp">Registrarse</b-nav-item>
+          <!-- <div class="flex" v-if="user">
             <b-navbar-brand href="#">{{user.name}}</b-navbar-brand>
             <b-nav-item @click.prevent="logOut">Salir</b-nav-item>
-          </div>
-          <div v-else>
-          <b-nav-item @click.prevent="getLogin">Login</b-nav-item>
-          <b-nav-item @click.prevent="signUp">Registrarse</b-nav-item>
-          </div>
+          </div> -->
+          <!-- <div v-else>
+            <b-nav-item @click.prevent="getLogin">Login</b-nav-item>
+            <b-nav-item @click.prevent="signUp">Registrarse</b-nav-item>
+          </div> -->
         </b-navbar-nav>
       </b-collapse>
       <!--div-- class="collapse navbar-collapse" id="navbarNav-opt">
@@ -98,6 +103,10 @@ export default {
 #default-navbar .navbar-brand
 {
     color: #fff;
+}
+.cerrarSesion a
+{
+  color: black !important;
 }
 
 </style>

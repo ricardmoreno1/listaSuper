@@ -35,13 +35,13 @@
         <div class="mb-4">
           <label class="input__label">Precio: </label>
           <div class="form__field relative">
-            <input v-model="formAddProduct.precio" class="input__field" type="text" placeholder="12">
+            <input v-model="formAddProduct.precioTemp" class="input__field" type="text" placeholder="12">
           </div>
         </div>
         <div class="mb-4">
           <label class="input__label">Descripcion: </label>
           <div class="form__field relative">
-            <input v-model="formAddProduct.descipcion" class="input__field" type="text" placeholder="descripcion">
+            <input v-model="formAddProduct.descripcion" class="input__field" type="text" placeholder="descripcion">
           </div>
         </div>
         <div class="mb-4">
@@ -57,7 +57,7 @@
           </div>
         </div>
         <div class="mb-4">
-          <button class="btn btn-primary mr-3 w-full">Aceptar</button>
+          <button class="btn btn-primary mr-3 w-full">Agregar</button>
         </div>
     </form>
         <div class="mb-4">
@@ -67,10 +67,18 @@
 </template>
 
 <script>
+
+import firebase from 'firebase'
+// const path = 'depa'
+// const pathId = 'abarrotes'
+// const pathSeleccionados = 'seleccionados'
+const pathAbarrotes = 'depa/abarrotes'
+
 export default {
   name: 'crearProducto',
   data () {
     return {
+      productosAdd: [],
       formAddProduct: {
         name: '',
         tienda: '',
@@ -78,10 +86,11 @@ export default {
         pais: '',
         moneda: '',
         descripcion: '',
-        precio: '',
+        precioTemp: '',
         marca: '',
         presentacion: ''
       }
+
     }
   },
   methods: {
@@ -90,10 +99,27 @@ export default {
     },
     addProduct () {
       console.log('add')
-      this.$store.dispatch('CREATE_PRODUCT', this.formAddProduct)
-        .then(() => {
-          this.cleanForm()
-        })
+      this.prepareData()
+      firebase.database().ref(pathAbarrotes).update(this.productosAdd)
+      // this.$store.dispatch('CREATE_PRODUCT', this.formAddProduct)
+      //   .then(() => {
+      //     this.cleanForm()
+      //   })
+    },
+    prepareData () {
+      console.log('preparando datos iniciales que no pone el usuario')
+      // const formAddProductSave = [
+      //   ...this.formAddProduct
+      // ]
+      // formAddProductSave.precio.last = '' // this.formAddProduct.precio
+
+      // this.productosAdd.push({
+      //   ...this.formAddProduct,
+      //   precio: {
+      //     last: 1,
+      //     new: '1'
+      //   }
+      // })
     }
   }
 }

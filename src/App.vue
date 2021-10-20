@@ -30,7 +30,7 @@ export default {
 </script>
 <style>
 #app {
-  padding: 5px;
+  padding: 0px 0px !important;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,6 +39,6 @@ export default {
 }
 
 #nav {
-  padding:1px;
+  padding:0px;
 }
 </style>

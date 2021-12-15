@@ -31,6 +31,30 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/updateProduct:prod',
+    name: 'updaterProducto',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Product/CreateProduct.vue'),
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/addStore',
+    name: 'createStore',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Store/CreateStore.vue'),
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/addCategory',
+    name: 'createCategory',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Category/CreateCategory.vue'),
+    meta: {
+      requiresAuth: true
+    }
+  },
   /* {
     path: '/user',
     redirect: { name: 'ProfilePage' }

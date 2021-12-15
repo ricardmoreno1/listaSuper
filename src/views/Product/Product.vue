@@ -2,6 +2,8 @@
     <div class="container">
         <div class="titulo_lista">
             <p style="color:white ; font-size:18px;"> Lista Supermercado </p>
+              <b-button variant="success" @click="cargarfile">Cargar</b-button>
+              <b-button variant="success" @click="borrarElements">Borrar</b-button>
             <input type="text" v-model="search" placeholder="Ingresar Producto" @input="searchSubGroup('searching')">
             <!--  basket , bucket , person ,shop ,  -->
             <div class="containersFiltros">
@@ -86,16 +88,43 @@
               </div>
             </div>
             <!-- <b-form-select name="prioridades" v-model="selected" :options="options" @input="searchSubGroup('props')"></b-form-select> -->
-            <b-form-select name="caracteristicas" v-model="selectedTienda" :options="optionsTiendas" @change="searchSubGroup('car')"></b-form-select>
+            <!-- <b-form-select name="caracteristicas" v-model="selectedTienda" :options="optionsTiendas" @change="searchSubGroup('car')"></b-form-select> -->
+            <b-form-select name="caracteristicas" v-model="selectedTienda" :options="opcStores" @change="searchSubGroup('car')"></b-form-select>
         </div>
          <div class="productos">
-                <div class="col producto" v-for="(producto,idx) in productFiltrado"
-                    v-bind:key="idx"
-                    >
+                <!--div class="col producto" v-for="(producto,idx) in productFiltrado" v-bind:key="idx"--> <!--Arreglos -->
+                <div class="col producto" v-for="producto in productFiltrado" v-bind:key="producto['.key']">
                     <div class=" ">
                       <b-card no-body>
+                        <!-- Version Con OJBETOS -->
                         <b-button-group class="mr-1">
-                          <!-- div   class="d-flex justify-content-between"   producto['.key'] -->
+
+                           <b-button block v-b-toggle ="'collapse-'+ producto['.key']"
+                          v-bind:class="{productoInicial :(!producto.seleccionado),
+                          productoInicialSelec:producto.seleccionado}" >
+                            <strong> {{ producto.name}} </strong> <strong class="price">${{producto.precios.last}}</strong>  <label class="presentacion">{{producto.presentacion}}</label> {{producto.tiendas.last}}
+                          </b-button>
+                          <b-button  @click="addDeseo(producto['.key'], $event)"
+                                    class="productoDeseo"
+                                    >
+                                    <b-icon v-if="producto.deseado" icon="heart-fill"
+                                    class="deseobutton"></b-icon>
+                                    <b-icon v-else icon="heart"
+                                    class="deseobutton1"></b-icon>
+                          </b-button>
+                          <b-button  @click="seleccioinarProducto(producto['.key'], $event)"
+                                    class="productoSeleccionado"
+                                    >
+                                    <b-icon v-if="producto.seleccionado" icon="cart-fill"
+                                    class="seleccionadobutton"></b-icon>
+                                    <b-icon v-else icon="cart-plus"
+                                    class="seleccionadobutton1"></b-icon>
+                          </b-button>
+                        </b-button-group>
+
+                        <!-- Version Con ARREGLOS -->
+                        <!--b-button-group class="mr-1">
+                          <!- -  NO div   class="d-flex justify-content-between"   producto['.key'] -- >
                           <b-button block v-b-toggle ="'collapse-'+ idx"
                           v-bind:class="{productoInicial :(!producto.seleccionado),
                           productoInicialSelec:producto.seleccionado}" >
@@ -108,7 +137,7 @@
                                     class="deseobutton"></b-icon>
                                     <b-icon v-else icon="heart"
                                     class="deseobutton1"></b-icon>
-                                    <!-- heart-fill -->
+
                           </b-button>
                           <b-button  @click="seleccioinarProducto(idx, $event)"
                                     class="productoSeleccionado"
@@ -118,10 +147,11 @@
                                     <b-icon v-else icon="cart-plus"
                                     class="seleccionadobutton1"></b-icon>
                           </b-button>
-                          </b-button-group>
+                          </b-button-group-->
                       </b-card>
                     </div>
-                    <b-collapse :id="'collapse-'+idx" class="mt-2">
+                    <!-- id="'collapse-'+idx" -->
+                    <b-collapse :id="'collapse-'+producto['.key']" class="mt-2">
                        <b-card>
                         <b-row class="flex-container">
                           <label class="textoClaro">Marca:</label><label> {{producto.marca}}: </label><label> {{producto.des}} </label>
@@ -129,8 +159,16 @@
                         </b-row>
                         <b-row class="flex-container">
                           <label class="flex-item" for="checkbox" >Promoción <input id="checkbox" type="checkbox" v-model="producto.newPricehasPromo"  :disabled="!producto.seleccionado" >  </label>
+                  <button class="btn btn-primary mr-3 w-full"
+                              @click="showCargarProducto(producto['.key'])">Editar </button>
+
                           <label class="flex-item">Nuevo <input v-miwidth="'100%'" type="text" v-model="producto.newPrecio"  :disabled="!producto.seleccionado" placeholder="$ nuevo precio"></label>
-                          <label class="flex-item">Tienda<input v-miwidth="'100%'" type="text" v-model="producto.newTienda"  :disabled="!producto.seleccionado" placeholder="nueva tienda"></label>
+                          <!-- <label class="flex-item">Tienda<input v-miwidth="'100%'" type="text" v-model="producto.newTienda"  :disabled="!producto.seleccionado" placeholder="nueva tienda"></label> -->
+                          <select v-model="producto.newTienda" class="flex-item input__field" :disabled="!producto.seleccionado">
+                            <option v-for="option in opcStores" v-bind:value="option.value" :key="option.value">
+                              {{ option.text }}
+                            </option>
+                          </select>
                         </b-row>
                       </b-card>
                     </b-collapse>
@@ -141,7 +179,7 @@
             <!--b-button :disabled="contador==0 && contadorDeseados==0" variant="success" @click="guardar">Guardar</-b-button -->
             <b-button variant="success" @click="guardar">Guardar</b-button>
             <b-button style="margin-left:10px;" :disabled="contadorDeseados==0" variant="info" @click="cancelar">Cancelar</b-button>
-            <b-button style="margin-left:10px;" @click="limpiar" variant="info">Limpiar</b-button>
+            <!-- <b-button style="margin-left:10px;" @click="limpiar" variant="info">Limpiar</b-button> -->
 
             <!--transition-- name="custom-classes-transition"
                 enter-active-class="animated tada"
@@ -165,16 +203,19 @@ import firebase from 'firebase'
 import { mapGetters } from 'vuex'
 const path = 'depa'
 const pathId = 'abarrotes'
-const pathSeleccionados = 'seleccionados'
+// const pathSeleccionados = 'seleccionados'
 // const db = firebase.firestore()
 export default {
   name: 'Product',
   computed: {
-    ...mapGetters(/* [
+    ...mapGetters(/* [ // esta es una forma de pasar los
       'productos'
     ], */
       {
-        user: 'authUser'
+        user: 'authUser',
+        productos: 'products',
+        stores: 'catStores'
+        // productos: state => state.products
       }),
     /* chartData: function chart () { solo fue ejemplo
       const data = {
@@ -182,15 +223,13 @@ export default {
       }
       return data
     } */
+    /** getProdutos () {
+      return this.$store.state.products
+    }, */
     productFiltrado () {
-      // console.log('productFiltrado:selected:' + this.selected)
-      // console.log('productFiltrado:lastSelect:' + this.lastselect)
-      // console.log('productFiltrado:Search:' + this.search)
       if (this.lastselect === 'props') {
         if (this.selected === 'a') {
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.deseado === true))
-          // console.log(productitos)
-          // this.limpiarFiltro(2)
           return productitos
           // return _.orderBy(productitos, 'categoria') // Use lodash’s
           // return Object.entries(this.productitos).sort(([_, b]) => b.categoria)
@@ -202,44 +241,15 @@ export default {
           return this.productos
         }
       } else if (this.lastselect === 'car') {
-        if (this.selectedTienda === 'a') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Aurrera'))
-          console.log(productitos)
+        if (this.selectedTienda !== '') {
+          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === this.selectedTienda))
           // this.limpiarFiltro(1)
-          return productitos
-        } else if (this.selectedTienda === 'b') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Puesto'))
-          // this.limpiarFiltro(1)
-          return productitos
-        } else if (this.selectedTienda === 'c') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Soriana'))
-          // this.limpiarFiltro(1)
-          return productitos
-        } else if (this.selectedTienda === 'd') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'oxxo'))
-          // this.limpiarFiltro(1)
-          return productitos
-        } else if (this.selectedTienda === 'e') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'SuperNaturista'))
-          return productitos
-        } else if (this.selectedTienda === 'f') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Superama'))
-          return productitos
-        } else if (this.selectedTienda === 'g') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Waltmart'))
-          return productitos
-        } else if (this.selectedTienda === 'h') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Waldos'))
-          return productitos
-        } else if (this.selectedTienda === 'i') {
-          const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.tiendas.last === 'Europea'))
           return productitos
         } else {
           return this.productos
         }
       } else if (this.lastselect === 'searching') {
         if (this.search !== '') {
-          console.log('buscando:' + this.search)
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.name.toUpperCase().includes(this.search.toUpperCase())))
           // return this.productos.filter(product => product.name.toUpperCase().includes(this.search.toUpperCase()))
           return productitos
@@ -248,7 +258,6 @@ export default {
         }
       } else if (this.lastselect === 'Mercado') {
         if (this.isButtonMercado) {
-          console.log('buscando: Por Mercado')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => {
             return (a.categoria === 'Mercado' || a.categoria === 'verduras' || a.categoria === 'mercado' || a.tiendas.last === 'Puesto' || a.tiendas.last === 'Mercado')
           }
@@ -272,7 +281,6 @@ export default {
         }
       } else if (this.lastselect === 'Super') {
         if (this.isButtonSuper) {
-          console.log('buscando: Por Super')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => {
             return (a.categoria === 'abarrotes' || a.categoria === 'Abarrotes' || a.categoria === 'abarrote')
           }
@@ -283,7 +291,6 @@ export default {
         }
       } else if (this.lastselect === 'Higiene') {
         if (this.isButtonHigiene) {
-          console.log('buscando: Por Higiene')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => {
             return (a.categoria === 'personal' || a.categoria === 'Personal')
           }
@@ -294,27 +301,22 @@ export default {
         }
       } else if (this.lastselect === 'Love') {
         if (this.isButtonLove) {
-          console.log('buscando: Por Love')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.deseado === true))
           return productitos
         } else {
-          console.log('buscando: Por Love pero todos')
           return this.productos
         }
       } else if (this.lastselect === 'Selec') {
         if (this.isButtonSelec) {
-          console.log('buscando: Por Selec')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => a.seleccionado === true))
           return productitos
         } else {
-          console.log('buscando: Por Selec pero todos')
           return this.productos
         }
       } else if (this.lastselect === 'Vino') {
         if (this.isButtonVino) {
-          console.log('buscando: Por Vino')
           const productitos = Object.fromEntries(Object.entries(this.productos).filter(([_, a]) => {
-            return (a.categoria === 'vino' || a.categoria === 'vinos')
+            return (a.categoria === 'Vinos y Licores' || a.categoria === 'vinos')
           }
           ))
           return productitos
@@ -339,23 +341,32 @@ export default {
         //   }
         // )
       }
+    },
+    opcStores () {
+      const stores = []
+      stores.push({ value: '', text: 'Escoje para filtrar por Tienda' })
+      Object.keys(this.stores).forEach(elementid => {
+        const element = this.stores[elementid]
+        const item = {
+          // value: elementid,
+          value: element.name,
+          text: element.name
+        }
+        stores.push(item)
+      })
+      return stores
     }
-
   },
   beforeCreate () {
-    // this.$store.commit('loading/SET_LOADING', true, { root: true })
-    console.log('---beforeCreate--- this.authUser:' + this.authUser)
-    console.log('---beforeCreate--- this.$store.state.authId:' + this.$store.state.authId)
+    this.$store.commit('loading/SET_LOADING', true, { root: true })
     // Version usando Store
-    // this.$store.dispatch('FETCH_PRODUCTS', this.$store.state.authId)
-    // this.$store.commit('loading/SET_LOADING', false, { root: true })
   },
   data () {
     return {
       id: '',
       contador: 0,
       contadorDeseados: 0,
-      productos: [],
+      // productos: [],
       productosSelyDes: [],
       selected: null,
       options: [
@@ -364,18 +375,6 @@ export default {
         { value: 'b', text: 'Seleccionados' }
       ],
       selectedTienda: null,
-      optionsTiendas: [
-        { value: null, text: 'Escoje para filtrar por Tienda' },
-        { value: 'a', text: 'Aurrera' },
-        { value: 'b', text: 'Mercado' },
-        { value: 'c', text: 'Soriana' },
-        { value: 'd', text: 'oxxo' },
-        { value: 'e', text: 'SuperNaturista' },
-        { value: 'f', text: 'Superama' },
-        { value: 'g', text: 'Waltmart' },
-        { value: 'h', text: 'Waldos' },
-        { value: 'i', text: 'Europea' }
-      ],
       lastselect: '',
       isButtonMercado: false,
       isButtonAbarrotes: false,
@@ -388,20 +387,15 @@ export default {
     }
   },
   mounted () {
-    this.$store.commit('loading/SET_LOADING', true, { root: true })
-    console.log('mounted:: this.id:' + this.id)
-    console.log('mounted:: this.authUser:' + this.authUser)
-    console.log('mounted:: this.$store.state.authId:' + this.$store.state.authId)
     this.getInitial(this.$store.state.authId)
-    this.$store.commit('loading/SET_LOADING', false, { root: true })
   },
   updated () {
     // console.log('updated :: this.$store.state.authId:')
-    // this.$store.commit('loading/SET_LOADING', false, { root: true })
   },
   methods: { /** Agrega el poducto al carrito */
     seleccioinarProducto: function (id, event) {
       // event.target.id y id)
+      // console.log('elemento seleccionado id[' + id + '] ')
       const producto = this.productos[id] // id es key
       producto.seleccionado = !producto.seleccionado
       if (this.productosSelyDes[id]) {
@@ -411,6 +405,7 @@ export default {
           seleccionado: producto.seleccionado
         }
       }
+      // console.log('Elemetos en  deseados y Seleccionados[' + this.productosSelyDes.length + ']', this.productosSelyDes)
       this.contador = this.getProductosSeleccionados244().length
       // falta agregar suma de precios de cantidad y articulos
     }, /** Agrega el producto a la lista de DESEOS */
@@ -434,6 +429,15 @@ export default {
         })
       }
     },
+    prepareDate: function () {
+      const ttt = new Date()
+      const yyyy = ttt.getFullYear()
+      const mm = ((ttt.getMonth() < 10) ? ('0' + ttt.getMonth()) : ttt.getMonth())
+      const dd = ttt.getDay() < 10 ? ('0' + ttt.getDay()) : ttt.getDay()
+      const date = yyyy + '' + mm + '' + dd
+      console.log('date: ' + date + '')
+      return date
+    }, /** Prepara las fechas que se van a guardar para la tienda */
     preparePriceToSave: function (id) {
       // const producto = this.productos.find((a) => a.id === id)
       const producto = this.productos[id]
@@ -459,9 +463,9 @@ export default {
         price: producto.newPrecio,
         date: date
       }) */
-    }, /** Prepara las fechas que se van a guardar para ... */
-    prepareToSave: function () {
-      console.log('Guardar---------------')
+    }, /** Prepara las fechas que se van a guardar para ...versio realtime */
+    prepareToUpdateProductRealTime: function () {
+      // console.log('prepareToUpdateProductRealTime---------------')
       const ttt = new Date()
       const yyyy = ttt.getFullYear()
       const mm = ((ttt.getMonth() < 10) ? ('0' + (ttt.getMonth() + 1)) : ttt.getMonth())
@@ -489,42 +493,150 @@ export default {
         producto.newTienda = ''
         // producto.
       })
+    },
+    prepareToUpdateProductOs: function () { // V1 solo falta el key
+      console.log('prepareToUpdateProductOs---------------')
+      const ttt = new Date()
+      const yyyy = ttt.getFullYear()
+      const mm = ((ttt.getMonth() < 10) ? ('0' + (ttt.getMonth() + 1)) : ttt.getMonth())
+      const dd = ttt.getDate() < 10 ? ('0' + ttt.getDate()) : ttt.getDate()
+      const date = yyyy + '' + mm + '' + dd
+
+      const productopric2 = new Map()
+      productopric2[date] = '22'
+      // const productopric2 = arrayOfBudget.map((productopric2) => { return Object.assign({}, productopric2) })
+      const productopric = Object.assign({}, productopric2)
+      var productsSelect = []
+
+      Object.keys(this.productos).forEach(function (productoId) {
+      //
+        // console.log('Guardar Recorriendo elemento: in for [' + productoId + ']')
+        const productoEle = this.productos[productoId]
+        // console.log('Guardar Recorriendo elemento: in for sel[' + productoEle.seleccionado + ']')
+        if (productoEle.seleccionado === true) {
+          // console.log('Guardar Recorriendo elemento: id:', productoId)
+          const productoadd = {
+            precios: productopric
+          }
+          productoadd['.key'] = productoId
+
+          // console.log('        ---- -Elemento add------', productoadd)
+          productsSelect.push(productoadd)
+        }
+        // producto.
+      })
+      return productsSelect
+    },
+    // Clona el objeto donde guardamos los precios, para despues agregar so hay nuevos
+    deepClone: function (objeto) {
+      var clone = {}
+      for (var key in objeto) {
+        var value = objeto[key]
+        if (typeof (value) !== 'object') {
+          clone[key] = value
+        } else {
+          clone[key] = this.deepClone(value)
+        }
+      }
+      return clone
+    },
+    prepareToUpdateProductOs2: function () { // V2 solo falta el key
+      // const selec2 = { ...this.productosSelyDes }
+
+      // https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+      // const selec2 = Object.assign({}, this.productosSelyDes)
+      // const selec2 = JSON.parse(JSON.stringify(this.productosSelyDes))
+      const selec2 = this.deepClone(this.productosSelyDes)
+      console.log('prepareToUpdateProductOs2 : selec2: array a recorrer:', selec2)
+      Object.entries(selec2).forEach((prod) => {
+        if (prod[1].seleccionado === true) {
+          const producto = this.productos[prod[0]]
+
+          prod[1].precios = {
+            last: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio
+          }
+
+          prod[1].tiendas = {
+            last: (producto.newTienda === undefined || producto.newTienda === '') ? producto.tiendas.last : producto.newTienda
+          }
+
+          // console.log('newpreciosPromo[' + producto.newPricehasPromo + ']')
+          if (producto.newPricehasPromo) {
+            // console.log('Guardar--------CON PROMO------[' + producto.newPrecio + ']-')
+            prod[1].precios.promo = producto.newPrecio !== '' ? producto.newPrecio : producto.precios.promo // este afuera del if
+            prod[1].oferta = true
+            prod[1].newPricehasPromo = false
+          } else {
+            if (producto.precios.promo) {
+              prod[1].precios.promo = producto.precios.promo
+            }
+          }
+          if (producto.preciosHis !== undefined) {
+            prod[1].preciosHis = producto.preciosHis
+          } else {
+            prod[1].preciosHis = []
+          }
+          const last = (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio
+          prod[1].preciosHis.push(this.prepareDate() + '-' + last)
+
+          if (producto.tiendasHis !== undefined) {
+            prod[1].tiendasHis = producto.tiendasHis
+          } else {
+            prod[1].tiendasHis = []
+          }
+          const lastH = (producto.newTienda === undefined || producto.newTienda === '') ? producto.tiendas.last : producto.newTienda
+          prod[1].tiendasHis.push(this.prepareDate() + '-' + lastH)
+
+          if (prod[1].deseado !== undefined) {
+            delete prod[1].deseado
+          }
+          if (prod[1].seleccionado !== undefined) {
+            delete prod[1].seleccionado
+          }
+        }
+      })
+      return selec2
     }, /* regresamos los valores  */
-    prepareToSaveProductosSelyDes: function () {
+    prepareToUpdateProductosSelyDes: function () {
+      // console.log('prepareToUpdateProductosSelyDes---------------')
       Object.entries(this.productosSelyDes).forEach((prod) => {
+        // console.log('Seleccionados : prod', prod)
         if (prod[1].seleccionado === true) {
           prod[1].seleccionado = false
           prod[1].deseado = false
         }
       })
-    },
+    }, /** Guarda los estados de los porductos del usuario */
     guardar: function () {
-      console.log('GUARDAR ya preparados los datos: [-' + this.$store.state.authId + '-]')
-      this.prepareToSave()
-      // this.$store.dispatch('SAVE_PRODUCTS', this.$store.state.authId, this.productosSelyDes)
+      console.log('GUARDAR  los datos para el usuario [-' + this.$store.state.authId + '-]')
+      // console.log('----New prices Productos deseados y seleccionados------' + this.productosSelyDes)
+      const prices = this.prepareToUpdateProductOs2()
+      console.log('----New prices Productos------selYdes', this.productosSelyDes)
+      console.log('----New prices Productos------pricess', prices)
+      const contadorAux = this.getProductosSeleccionados244().length
+      const contadorDeseadosAux = this.getProductosDeseadosSeleccionados().length
+      console.log('---- Productos sleccionados[' + contadorAux + '] deseados [' + contadorDeseadosAux + ']------' + prices)
 
-      /* firebase
-        .database()
-        .ref(pathSeleccionados)
-        .child(this.$store.state.authId)
-        .transaction(
-          (valoresDB) => this.validarCompra(valoresDB),
-          (error, committed, snapshot) =>
-            this.validarRespuesta(error, committed, snapshot)
-        ) */
       this.contador = 0
-      this.prepareToSaveProductosSelyDes()
-      firebase.database().ref(pathSeleccionados).child(this.$store.state.authId).set(this.productosSelyDes)
-      // console.log('authID : ' + firebase.auth().currentUser.uid)
-      this.actualizarElementos()
-      this.$notify({
-        group: 'foo',
-        type: 'success',
-        title: 'Guardar',
-        text: 'Actualizcion de los datos correctamente'
-      })
+      //        firebase.database().ref(pathSeleccionados).child(this.$store.state.authId).set(this.productosSelyDes)
+      this.$store.dispatch('SAVE_PRICE_PRODUCTSBYUSER_FS', prices)
+        .then(() => {
+          this.updateView()
+          this.prepareToUpdateProductosSelyDes()
+          this.$store.dispatch('SAVE_PRODUCTSBYUSER_FS', this.productosSelyDes)
+            .then(() => {
+              console.log('Se actualizo el nuevo precio del producto, Actualizamos la vista')
+              this.$notify({
+                group: 'foo',
+                type: 'success',
+                title: 'Guardar',
+                text: 'Actualizcion de los datos correctamente'
+              })
+            })
+        })
+        .catch(() => {})
     },
-    actualizarElementos: function () {
+    actualizarElementosRT: function () {
       // firebase.database().ref('/salas/1').set(this.productos);
       // firebase.database().ref(path).child(pathId).set(this.productos,function(error){
       /**  if(error){
@@ -538,6 +650,25 @@ export default {
       // }).then(response => console.log("Actualizacion finalizada["+response+"]") )
       firebase.database().ref(path).child(pathId).set(this.productos)
       // .set(this.productos, error=> this.validarRespuesta(error))
+    },
+    updateView: function () {
+      // console.log('updateView: actualizar la vista')
+      // Object.entries(this.productosSelyDes).forEach((prod) => {
+      Object.entries(this.productos).forEach((prod) => {
+        const idProduct = prod[0]
+        const producto = this.productos[idProduct] // id es key
+        if (prod[1].seleccionado === true) {
+          console.log(' se Actualiza :oferta[' + producto.newPricehasPromo + '] newTienda[' + producto.newTienda + ']  newPrecio[' + producto.newPrecio + '] ')
+          producto.seleccionado = false
+          this.$store.dispatch('UPDATE_DATA_PROD', {
+            id: idProduct,
+            valueprice: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio,
+            valuestore: (producto.newTienda === undefined || producto.newTienda === '') ? producto.tiendas.last : producto.newTienda,
+            valueselect: false,
+            valueoferta: producto.newPricehasPromo
+          })
+        }
+      })
     },
     validarRespuesta: function (error, committed, shapshot) {
       if (error) {
@@ -559,6 +690,10 @@ export default {
       // console.log(shapshot)
     }, /** Carga la informacion inicial con FireBase */
     getInitial: function (id) {
+      // this.getInitialRT(id)
+      this.getInitialFT(id)
+    },
+    getInitialRT: function (id) {
       console.log('getInitial[' + id + ']')
       // this.$store.commit('loading/SET_LOADING', true, { root: true })
       /* firebase.database().ref(path).child(pathId).on('value', (snapshot) => {
@@ -622,7 +757,27 @@ export default {
       // ejecuta el cambio cuando hay un cambio en la BD
       // .once('value', snapshot => this.cargarElementos( snapshot.val() ))    //commit('loading/SET_LOADING', true, { root: true })
     }, /** Carga la informacion inicial */
-
+    getInitialFT: function (id) {
+      // console.log('getInitial[' + id + ']')
+      if (!id) {
+        // console.log('Aun no logeado')
+        this.$store.commit('loading/SET_LOADING', false, { root: true })
+      }
+      // const instance = firebase.database().ref('depa/abarrotes')
+      // const instanceSeleccionados = firebase.database().ref('seleccionados') // .child(idd)
+      /* if (firebase.auth().currentUser.uid) { */
+      // if (state.authId) {
+      if (id) {
+        // console.log('Se traen los seleccionados por usuario')
+        // instanceSeleccionados.child(id)
+        this.$store.dispatch('FETCH_PRODUCTS_FT', this.formAddProduct)
+        this.$store.dispatch('FETCH_CAT_PRODUCTOS_FT', this.formAddProduct)
+        this.$store.dispatch('FETCH_CAT_TIENDAS_FT', this.formAddProduct)
+        this.$store.commit('loading/SET_LOADING', false, { root: true })
+        console.log('Se trajeros los seleccionados por usuario')
+        // getProdutos
+      }
+    },
     /* Carga los productos de un cliente  */
     cargarElementos: function (data) {
       this.productos = data
@@ -635,13 +790,17 @@ export default {
         producto.user_id = null
 
       })
-      this.actualizarElementos() */
+      this.actualizarElementosRT() */
       this.contador = 0
       this.contadorDeseados = 0
     }, /** obtiene los productos agregados a comprar */
     getProductosSeleccionados: function (id) {
       // productosSelyDes
       return Object.values(this.productos).filter((a) => a.seleccionado)
+    },
+    getProductosSeleccionadosEntries: function (id) {
+      // productosSelyDes
+      return Object.entries(this.productos).filter((a) => a.seleccionado)
     },
     getProductosSeleccionados244: function () {
       // return this.productos.filter((a) => a.seleccionado)
@@ -652,25 +811,17 @@ export default {
     },
     getProductosSeleccionados2: function () {
       // return this.productos.filter((a) => a.seleccionado)
-      console.log(' getProductosSeleccionados2  ' + this.productos.length)
-      // console.log(this.productos)
       var parsedobj = JSON.parse(JSON.stringify(this.productos))
-      console.log(parsedobj)
-      // console.log(' getProductosSeleccionados2  ' + parsedobj.length)
       // return parsedobj.filter((a) => a.seleccionado)
       var productosel = []
       Object.keys(parsedobj).forEach((productoId) => {
       // return parsedobj.forEach((productoId) => {
         const producto = this.productos[productoId]
-        // console.log(producto)
-        // console.log(' foreach seleccionado:' + producto.seleccionado)
 
         // producto.adquirido = false
         // producto.user_id = null
 
         if (producto.seleccionado) {
-          console.log(' foreach: ' + producto.seleccionado)
-
           productosel.push(producto)
           // var productosel['.key'] = productoId
           // var productosel2
@@ -679,8 +830,6 @@ export default {
           //  pr oductosel2.push(productosel)
           // this.productosSelyDes.push(producto)
         }
-        console.log('this.productosSelyDes')
-        console.log(productosel)
         return productosel
         // return this.productosSelyDes
       })
@@ -703,6 +852,14 @@ export default {
       // if (tipo === 1) this.selected = null
       // if (tipo === 2) this.selectedTienda = null
       // console.log('DESEO')
+    },
+    cargarfile: function () {
+      console.log('cargar FILE ')
+      this.$store.dispatch('LOAD_PRODUCTOS_FT')
+    },
+    borrarElements: function () {
+      console.log('borrar productos ')
+      this.$store.dispatch('DELETE_PRODUCTOS_FT')
     },
     buttonsMercado: function () {
       this.isButtonMercado = false
@@ -796,6 +953,14 @@ export default {
           this.buttonsMercadotitle('Vino')
         }
       }
+    },
+    showCargarProducto: function (idProduct) {
+      // const prodSelec = Object.values(Object.entries(this.productos).filter(([_, a]) => a['.key'] === idProduct))
+      const prodSelec = this.productos[idProduct]
+      this.$router.push({
+        name: 'updaterProducto',
+        params: { prod: prodSelec }
+      })
     }
   },
   watch: {

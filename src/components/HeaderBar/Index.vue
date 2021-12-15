@@ -17,7 +17,8 @@
         <b-navbar-nav >
           <!-- <b-nav-item href="#">Inicio</b-nav-item> -->
           <b-nav-item :to="{name: 'crearProducto'}">Agrega producto</b-nav-item>
-          <b-nav-item href="#">Agrega tienda</b-nav-item>
+          <b-nav-item :to="{name: 'createStore'}">Store</b-nav-item>
+          <b-nav-item :to="{name: 'createCategory'}">Categorias</b-nav-item>
           <b-navbar-brand v-if="user" href="#">{{user.name}}</b-navbar-brand>
           <b-nav-item v-if="user"  @click.prevent="logOut" class="cerrarSesion">Salir</b-nav-item>
           <b-nav-item v-if="!user" @click.prevent="getLogin">Login</b-nav-item>

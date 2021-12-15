@@ -55,7 +55,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 // fcuando cambia el usuario, cambia las configuracion
 firebase.auth().onAuthStateChanged((user) => {
-  console.log('onAuthStateChanged')
+  // console.log('onAuthStateChanged')
   if (user) {
     store.dispatch('FETCH_AUTH_USER')
   }

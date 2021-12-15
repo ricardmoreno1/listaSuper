@@ -137,4 +137,24 @@ export default {
     padding-left: 0px;
   }
 }
+
+.my-style {
+  /* Style of the notification itself */
+  /* .notification-title { */
+    /* Style for title line */
+  /* } */
+
+  /* .notification-content { */
+    /* Style for content*/
+  /* } */
+
+  /* &.my-type { */
+    /*
+    Style for specific type of notification, will be applied when you
+    call notification with "type" parameter:
+    this.$notify({ type: 'my-type', message: 'Foo' })
+    */
+  /* } */
+}
+
 </style>

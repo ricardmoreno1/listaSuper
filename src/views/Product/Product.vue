@@ -2,8 +2,11 @@
     <div class="container">
         <div class="titulo_lista">
             <p style="color:white ; font-size:18px;"> Lista Supermercado </p>
-              <b-button variant="success" @click="cargarfile">Cargar</b-button>
-              <b-button variant="success" @click="borrarElements">Borrar</b-button>
+            <div v-if="user">
+              <b-button v-if="user.rol === 'admin' " variant="success" @click="cargarfile">Cargar</b-button>
+              <b-button v-if="user.rol === 'admin' " variant="success" @click="borrarElements">Borrar</b-button>
+
+            </div>
             <input type="text" v-model="search" placeholder="Ingresar Producto" @input="searchSubGroup('searching')">
             <!--  basket , bucket , person ,shop ,  -->
             <div class="containersFiltros">
@@ -159,9 +162,10 @@
                         </b-row>
                         <b-row class="flex-container">
                           <label class="flex-item" for="checkbox" >Promoción <input id="checkbox" type="checkbox" v-model="producto.newPricehasPromo"  :disabled="!producto.seleccionado" >  </label>
-                  <button class="btn btn-primary mr-3 w-full"
+                          <div v-if="user">
+                          <button class="btn btn-primary mr-3 w-full"  v-if="user.rol === 'admin' "
                               @click="showCargarProducto(producto['.key'])">Editar </button>
-
+                          </div>
                           <label class="flex-item">Nuevo <input v-miwidth="'100%'" type="text" v-model="producto.newPrecio"  :disabled="!producto.seleccionado" placeholder="$ nuevo precio"></label>
                           <!-- <label class="flex-item">Tienda<input v-miwidth="'100%'" type="text" v-model="producto.newTienda"  :disabled="!producto.seleccionado" placeholder="nueva tienda"></label> -->
                           <select v-model="producto.newTienda" class="flex-item input__field" :disabled="!producto.seleccionado">

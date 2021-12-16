@@ -13,16 +13,16 @@ export default {
       <div>
         <div class="modall bg-white p-4 shadow-lg">
           <div class="modall-head text-right">
-            <button onClick={this.onClose}>CerrarIn</button>
+            <button onClick={this.onClose} class='btn'>Cerrar</button>
             <a href="#" onClick={this.onClose}>
-              <i class="material-icons modal-close-icon">close</i>
+              <i class="material-icons modal-close-icon">Close</i>
             </a>
           </div>
+
           <div class="modall-content">
             {this.$slots.default}
-
-            <button onClick={this.clickCancelHandler}>Cancelar</button>
-            <button onClick={this.clickOkHandler}>Ok</button>
+            <button class='btn' onClick={this.clickCancelHandler}>Cancelar</button>
+            <button class='btn' onClick={this.clickOkHandler}> OK </button>
 
           </div>
 
@@ -32,13 +32,12 @@ export default {
   },
   methods: {
     clickCancelHandler () {
-      console.log('Click Cancel')
+      this.$emit('close-modal')
     },
     clickOkHandler () {
       console.log('Click Ok')
     },
     onClose () {
-      console.log('Click CERRAR')
       this.$emit('close-modal')
     }
   }
@@ -69,6 +68,17 @@ export default {
   width: 100vw;
   height: 100vh;
   background: rgba(37, 37, 37, 0.8);
+}
+
+.btn {
+  border: none;
+  background-color: #fff;
+  cursor: pointer;
+
+    /* border-radius: 4px; */
+}
+.btn:hover{
+  box-shadow: 0px 3px 5px rgb(0,0,0,0.2);
 }
 
 </style>

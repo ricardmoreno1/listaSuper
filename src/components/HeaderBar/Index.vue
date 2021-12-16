@@ -14,13 +14,17 @@
         <span class="navbar-toggler-icon"></span>
       </-button-->
       <b-collapse id="navbarNav-opt" is-nav>
-        <b-navbar-nav >
+        <b-navbar-nav  v-if="user" >
           <!-- <b-nav-item href="#">Inicio</b-nav-item> -->
-          <b-nav-item :to="{name: 'crearProducto'}">Agrega producto</b-nav-item>
-          <b-nav-item :to="{name: 'createStore'}">Store</b-nav-item>
-          <b-nav-item :to="{name: 'createCategory'}">Categorias</b-nav-item>
+          <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'crearProducto'}">Agrega producto</b-nav-item>
+          <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'createStore'}">Store</b-nav-item>
+          <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'createCategory'}">Categorias</b-nav-item>
           <b-navbar-brand v-if="user" href="#">{{user.name}}</b-navbar-brand>
           <b-nav-item v-if="user"  @click.prevent="logOut" class="cerrarSesion">Salir</b-nav-item>
+        </b-navbar-nav>
+
+        <b-navbar-nav v-if="!user">
+          <!-- <b-nav-item href="#">Inicio</b-nav-item> -->
           <b-nav-item v-if="!user" @click.prevent="getLogin">Login</b-nav-item>
           <b-nav-item v-if="!user" @click.prevent="signUp">Registrarse</b-nav-item>
           <!-- <div class="flex" v-if="user">

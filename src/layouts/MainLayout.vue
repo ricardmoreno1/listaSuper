@@ -7,7 +7,7 @@
     <FooterBar/>
     <!-- Modals -->
     <modal :show="modals.login" @close-modal="closeModal">
-      <h1> Bienvenido </h1>
+      <h1> Login </h1>
       <form @submit.prevent="loginHandlerSubmit">
         <div class="mb-4">
           <label class="input__label">Email</label>
@@ -23,10 +23,11 @@
         </div>
         <div class="mb-4">
           <toggle-input v-model="formLogin.rememberMe"></toggle-input>
-          Recuerdame
+            Recuerdame
         </div>
         <div class="mb-4">
-          <button class="btn btn-primary mr-3 w-full">Login</button>
+          <!-- <button class="btn btn-primary mr-3 w-full">Login</button> -->
+          <button class="btn-log">Login</button>
         </div>
       </form>
     </modal>
@@ -54,7 +55,8 @@
           </div>
         </div>
         <div class="mb-4">
-          <button class="btn btn-primary mr-3 w-full">Registrar</button>
+          <!-- <button class="btn btn-primary mr-3 w-full">Registrar</button> -->
+          <button class="btn-log">Registrar</button>
         </div>
       </form>
     </modal>
@@ -81,7 +83,8 @@ export default {
       formRegister: {
         email: '',
         password: '',
-        name: ''
+        name: '',
+        rol: 'user'
       }
     }
   },
@@ -111,8 +114,11 @@ export default {
     },
     registerHandlersubmit () {
       this.$store.dispatch('CREATE_USER', this.formRegister)
+      // console.log(this.formRegister)
         .then(() => {
           this.closeModalRegister()
+        }).catch((message) => {
+          console.log('Error al registrarte[' + message + ']')
         })
     },
     loginHandlerSubmit () {
@@ -123,6 +129,8 @@ export default {
         console.log('Logeando: Ya entro')
         this.closeModal()
         //  this.$router.go(0) // ayuda a recargar despues de logearse
+      }).catch(() => {
+        console.log('Error')
       })
     }
   }
@@ -155,6 +163,18 @@ export default {
     this.$notify({ type: 'my-type', message: 'Foo' })
     */
   /* } */
+}
+.btn-log {
+    transition: all 0.5s ease;
+    background-color: #2185D0;
+    border-radius: 4px;
+    color:#fff;
+    border:none;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    outline: 0;
 }
 
 </style>

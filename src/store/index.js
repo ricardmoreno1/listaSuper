@@ -176,16 +176,20 @@ export default new Vuex.Store({
       })
       // db.collection('productos').doc(id).delete()
     },
-    CREATE_USER: ({ state, commit }, { name, email, password }) => new Promise((resolve) => {
+    CREATE_USER: ({ state, commit }, { name, email, password, rol }) => new Promise((resolve) => {
       firebase.auth().createUserWithEmailAndPassword(email, password).then((account) => {
         const id = account.user.uid
         const registeredAt = Math.floor(Date.now() / 1000)
-        const newUser = { email, name, registeredAt }
+        const newUser = { email, name, registeredAt, rol }
         firebase.database().ref('users').child(id).set(newUser)
           .then(() => {
             commit('SET_ITEM', { resource: 'users', id, item: newUser })
             resolve(state.users[id])
           })
+        // Version qNueva con updateProfile, revisar que hace
+        // account.user.updateProfile({
+        //   displayName: name
+        // })
       })
     }),
     FETCH_USER: ({ state, commit }, { id }) => new Promise((resolve) => {
@@ -278,7 +282,7 @@ export default new Vuex.Store({
     }),
     FETCH_PRODUCTS_FT: ({ state, commit }, idd) => new Promise((resolve) => {
       // console.log('FETCH_PRODUCTS_FT: Version para obtener articulos en FireStore ')
-      var mapas
+      var mapas = {}
       const db = firebase.firestore()
       const refUser = db.collection('seleccionados').doc(state.authId)
       refUser.get()
@@ -288,7 +292,6 @@ export default new Vuex.Store({
             console.log('No matching documents.')
             return
           }
-
           mapas = respDoc.data()
         })
 
@@ -299,14 +302,16 @@ export default new Vuex.Store({
             // console.log(`querySingle postID  => ${datita.id}`, datita.data())
             let isSeleccionado = false
             let isDeseado = false
-            Object.keys(mapas).forEach((productoId) => {
-              const producto = mapas[productoId]
-              if (productoId === datita.id) {
-                // console.log('------producto--[' + productoId + ']-[' + producto.seleccionado + '] deseado[' + producto.deseado + ' ]')
-                isSeleccionado = producto.seleccionado !== undefined ? producto.seleccionado : false
-                isDeseado = producto.deseado !== undefined ? producto.deseado : false
-              }
-            })
+            if (mapas) {
+              Object.keys(mapas).forEach((productoId) => {
+                const producto = mapas[productoId]
+                if (productoId === datita.id) {
+                  // console.log('------producto--[' + productoId + ']-[' + producto.seleccionado + '] deseado[' + producto.deseado + ' ]')
+                  isSeleccionado = producto.seleccionado !== undefined ? producto.seleccionado : false
+                  isDeseado = producto.deseado !== undefined ? producto.deseado : false
+                }
+              })
+            }
             const intem = {
               ...datita.data(),
               seleccionado: isSeleccionado,
@@ -448,17 +453,24 @@ export default new Vuex.Store({
         // console.log('SAVE_PRODUCTSBYUSER_FireStore: Version para guarda un articulo en FireStore ')
         // console.log('SAVE_PRODUCTSBYUSER_FS elemento state.authId [' + state.authId + ']', newEle)
         const db = firebase.firestore()
-
         const intem = {
           ...newEle
         }
         console.log('elementos a guardar ', intem)
         const refUser = db.collection('seleccionados').doc(state.authId)
-        refUser.update(intem
-
-        ).then(() => {
-          resolve()
-        })
+        // console.log('---------SAVE_PRODUCTSBYUSER_FS', refUser)
+        refUser.get().then((result) => {
+          if (result.exists) {
+            console.log('---------Actualiza')
+            refUser.update(intem
+            ).then(() => {
+              resolve()
+            })
+          } else {
+            console.log('---------crea')
+            db.collection('seleccionados').doc(state.authId).set(intem)
+          }
+        }).catch(() => console.log('Ocurrio un error al guardar los productos de los productos'))
         // .catch(error => {
         //   reject()
         // })

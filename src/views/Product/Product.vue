@@ -2,11 +2,10 @@
     <div class="container">
         <div class="titulo_lista">
             <p style="color:white ; font-size:18px;"> Lista Supermercado </p>
-            <div v-if="user">
+            <!-- <div style="text-align:left" v-if="user">
               <b-button v-if="user.rol === 'admin' " variant="success" @click="cargarfile">Cargar</b-button>
               <b-button v-if="user.rol === 'admin' " variant="success" @click="borrarElements">Borrar</b-button>
-
-            </div>
+            </div> -->
             <input type="text" v-model="search" placeholder="Ingresar Producto" @input="searchSubGroup('searching')">
             <!--  basket , bucket , person ,shop ,  -->
             <div class="containersFiltros">
@@ -555,11 +554,15 @@ export default {
       Object.entries(selec2).forEach((prod) => {
         if (prod[1].seleccionado === true) {
           const producto = this.productos[prod[0]]
-
-          prod[1].precios = {
-            last: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio
+          if (producto.newPricehasPromo) {
+            prod[1].precios = {
+              last: (producto.precios.last === undefined || producto.precios.last === '') ? '0' : producto.precios.last
+            }
+          } else {
+            prod[1].precios = {
+              last: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio
+            }
           }
-
           prod[1].tiendas = {
             last: (producto.newTienda === undefined || producto.newTienda === '') ? producto.tiendas.last : producto.newTienda
           }
@@ -662,14 +665,18 @@ export default {
         const idProduct = prod[0]
         const producto = this.productos[idProduct] // id es key
         if (prod[1].seleccionado === true) {
-          console.log(' se Actualiza :oferta[' + producto.newPricehasPromo + '] newTienda[' + producto.newTienda + ']  newPrecio[' + producto.newPrecio + '] ')
+          console.log(' se Actualiza :oferta[' + producto.newPricehasPromo + '] newTienda[' + producto.newTienda + ']  newPrecio[' + producto.newPrecio + '] precios.last [' + producto.precios.last + ']')
           producto.seleccionado = false
+          const valuepriceAux = producto.newPricehasPromo ? ((producto.precios.last === undefined || producto.precios.last === '') ? '0' : producto.precios.last) : producto.newPrecio
+          console.log(' se Actualiza :valor a Guardar[' + valuepriceAux + '] producto.newPrecio[' + producto.newPrecio + '] ')
           this.$store.dispatch('UPDATE_DATA_PROD', {
             id: idProduct,
-            valueprice: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio,
+            // valueprice: (producto.newPrecio === undefined || producto.newPrecio === '') ? producto.precios.last : producto.newPrecio,
+            valueprice: valuepriceAux,
             valuestore: (producto.newTienda === undefined || producto.newTienda === '') ? producto.tiendas.last : producto.newTienda,
             valueselect: false,
-            valueoferta: producto.newPricehasPromo
+            valueoferta: producto.newPricehasPromo,
+            valuepriceoferta: producto.newPrecio
           })
         }
       })

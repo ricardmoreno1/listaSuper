@@ -8,13 +8,13 @@ import loading from './modules/loading'
 
 // import { map } from 'core-js/core/array'
 // import sourceData from './data.json'
-import sourceData from './../data3.json'
+// import sourceData from './../data2.json'
 Vue.use(Vuex)
 
 // cosnt store = new Vuex.Store({
 export default new Vuex.Store({
   state: {
-    ...sourceData,
+    // ...sourceData,
     count: 0,
     users: {},
     isExistProduct: false,
@@ -83,9 +83,11 @@ export default new Vuex.Store({
       state.products[id].newPrecio = ''
       state.products[id].newTienda = ''
     },
-    SET_DATA_PRODUCTO_OFERTA (state, { id, valueoferta, valueprice }) {
+    SET_DATA_PRODUCTO_OFERTA (state, { id, valueoferta, valuepriceoferta }) {
+      console.log('SET_DATA_PRODUCTO_OFERTA')
+      console.log(id, valueoferta, valuepriceoferta)
       state.products[id].oferta = valueoferta
-      state.products[id].precios.promo = valueprice
+      state.products[id].precios.promo = valuepriceoferta
       state.products[id].newPricehasPromo = false
     }
   },
@@ -93,11 +95,12 @@ export default new Vuex.Store({
     TOGGLE_MODAL_STATE: ({ commit }, { name, value }) => {
       commit('SET_MODAL_STATE', { name, value })
     },
-    UPDATE_DATA_PROD: ({ commit }, { id, valueprice, valuestore, valueselect, valueoferta }) => {
+    UPDATE_DATA_PROD: ({ commit }, { id, valueprice, valuestore, valueselect, valueoferta, valuepriceoferta }) => {
       // console.log('agregando los valores al elemento modificado')
+      // console.log(id, valueoferta, valuepriceoferta)
       commit('SET_DATA_PRODUCTO', { id, valueprice, valuestore, valueselect })
       if (valueoferta) {
-        commit('SET_DATA_PRODUCTO_OFERTA', { id, valueoferta, valueprice })
+        commit('SET_DATA_PRODUCTO_OFERTA', { id, valueoferta, valuepriceoferta })
       }
     },
     CREATE_ROOM: ({ state, commit }, room) => {
@@ -175,6 +178,23 @@ export default new Vuex.Store({
         db.collection('productos').doc(id).delete()
       })
       // db.collection('productos').doc(id).delete()
+    },
+    RESPALDAR_PRODUCTOS_FT: ({ state }) => {
+      console.log('respaldar productos ')
+      // Para guardarlo en el localStorages
+      // const data = JSON.stringify(state.products)
+      // window.localStorage.setItem('arr', data)
+      // console.log(JSON.parse(window.localStorage.getItem('arr')))
+
+      const data = JSON.stringify(state.products)
+      const blob = new Blob([data], { type: 'text/plain' })
+      const e = document.createEvent('MouseEvents')
+      const a = document.createElement('a')
+      a.download = 'testRespaldo.json'
+      a.href = window.URL.createObjectURL(blob)
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
+      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      a.dispatchEvent(e)
     },
     CREATE_USER: ({ state, commit }, { name, email, password, rol }) => new Promise((resolve) => {
       firebase.auth().createUserWithEmailAndPassword(email, password).then((account) => {

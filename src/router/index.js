@@ -55,6 +55,14 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/administrator',
+    name: 'administrator',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Admin/Administrator.vue'),
+    meta: {
+      requiresAuth: true
+    }
+  },
   /* {
     path: '/user',
     redirect: { name: 'ProfilePage' }

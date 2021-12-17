@@ -19,6 +19,7 @@
           <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'crearProducto'}">Agrega producto</b-nav-item>
           <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'createStore'}">Store</b-nav-item>
           <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'createCategory'}">Categorias</b-nav-item>
+          <b-nav-item v-if="user.rol === 'admin' " :to="{name: 'administrator'}">Admin</b-nav-item>
           <b-navbar-brand v-if="user" href="#">{{user.name}}</b-navbar-brand>
           <b-nav-item v-if="user"  @click.prevent="logOut" class="cerrarSesion">Salir</b-nav-item>
         </b-navbar-nav>
